@@ -125,7 +125,7 @@
     <dependency> <!-- NMS blocks -->
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.6.1-R0.1-SNAPSHOT</version>
+      <version>1.6.2-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
       <type>jar</type>
       <optional>true</optional>
@@ -160,7 +160,6 @@
         <directory>${basedir}/src/main/resources/</directory>
         <includes>
           <include>plugin.yml</include>
-          <include>properties.yml</include>
         </includes>
       </resource>
       <resource>
@@ -367,8 +366,18 @@
           <optional>true</optional>
         </dependency>
       </dependencies>
-      
+
       <build>
+        <resources>
+          <resource>
+            <targetPath>.</targetPath>
+            <filtering>true</filtering>
+            <directory>${basedir}/src/spout/resources/</directory>
+            <includes>
+              <include>properties.yml</include>
+            </includes>
+          </resource>
+        </resources>
         <plugins>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>

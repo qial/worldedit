@@ -344,10 +344,9 @@ public class WorldEdit {
             // Have the session use inventory if it's enabled and the player
             // doesn't have an override
             session.setUseInventory(config.useInventory
-                    && !((config.useInventoryOverride ||
-                            (config.useInventoryCreativeOverride && player.hasCreativeMode()))
-                            && player.hasPermission("worldedit.inventory.unrestricted")));
-
+                    && !(config.useInventoryOverride
+                            && (player.hasPermission("worldedit.inventory.unrestricted")
+                                || (config.useInventoryCreativeOverride && player.hasCreativeMode()))));
         }
 
         return session;
@@ -906,6 +905,18 @@ public class WorldEdit {
         }
     }
 
+    public int getMaximumPolyhedronPoints(LocalPlayer player) {
+        if (player.hasPermission("worldedit.limit.unrestricted") || config.maxPolyhedronPoints < 0) {
+            return config.defaultMaxPolyhedronPoints;
+        } else {
+            if (config.defaultMaxPolyhedronPoints < 0) {
+                return config.maxPolyhedronPoints;
+            }
+            return Math.min(config.defaultMaxPolyhedronPoints,
+                    config.maxPolyhedronPoints);
+        }
+    }
+
     /**
      * Checks to see if the specified radius is within bounds.
      *
@@ -915,6 +926,18 @@ public class WorldEdit {
     public void checkMaxRadius(double radius) throws MaxRadiusException {
         if (config.maxRadius > 0 && radius > config.maxRadius) {
             throw new MaxRadiusException();
+        }
+    }
+
+    /**
+     * Checks to see if the specified brush radius is within bounds.
+     *
+     * @param radius
+     * @throws MaxBrushRadiusException
+     */
+    public void checkMaxBrushRadius(double radius) throws MaxBrushRadiusException {
+        if (config.maxBrushRadius > 0 && radius > config.maxBrushRadius) {
+            throw new MaxBrushRadiusException();
         }
     }
 
@@ -1446,8 +1469,10 @@ public class WorldEdit {
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks changed in an operation reached ("
                     + e.getBlockLimit() + ").");
+        } catch (MaxBrushRadiusException e) {
+            player.printError("Maximum allowed brush size: " + config.maxBrushRadius);
         } catch (MaxRadiusException e) {
-            player.printError("Maximum radius: " + config.maxRadius);
+            player.printError("Maximum allowed size: " + config.maxRadius);
         } catch (UnknownDirectionException e) {
             player.printError("Unknown direction: " + e.getDirection());
         } catch (InsufficientArgumentsException e) {
